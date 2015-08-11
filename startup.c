@@ -198,24 +198,20 @@ void spi_init() {
 	UCA0CTL1 = SOFTWARE_RESET_ENABLE;
 
 	/* Configure the UCA0CTL0 register */
-//	UCA0CTL0 = SPI_MODE_ENABLE;
-	UCA0CTL0 |= CLOCK_PHASE_CAPTURE_FIRST_EDGE;	//Data is changed on the first UCLK edge and captured on the following edge.
+	UCA0CTL0 = SPI_MODE_ENABLE;
+	UCA0CTL0 |= CLOCK_PHASE_CAPTURE_FIRST_EDGE;		//Data is changed on the first UCLK edge and captured on the following edge.
 	UCA0CTL0 &= ~CLOCK_POLARITY_INACTIVE_ST_HIGH;	//The inactive state is low.
 	UCA0CTL0 |= MSB_FIRST | MASTER_MODE_ENABLE | SYNCH_MODE_ENABLE;
 
 	/* Configure the UCA0CTL1 register */
 	UCA0CTL1 = SPI_CLOCK_SRC_SMCLK;
-	UCA0BR0 |= 0x02;   //  /2
-	UCA0BR1 = 0;  //
-	UCA0MCTL   =   0;  //  No  modulation
+	UCA0BR0 |= 0x02;								//  /2
+	UCA0BR1 = 0;									//
+	UCA0MCTL   =   0;								//  No  modulation
 	UCA0CTL1 &= ~SOFTWARE_RESET_ENABLE;
 
-//	/* Configure the IE2 register */
-//	IE2 = TRANSMIT_INTERRUPT_ENABLE | RECEIVE_INTERRUPT_ENABLE;
-//
-//	/* Configure the IFG2 register */
-//	IFG2 = TRANSMIT_INTERRUPT_PENDING | RECEIVE_INTERRUPT_PENDING;
-//	BIT5;
+	/* Configure the IE2 register */
+	IE2 = TRANSMIT_INTERRUPT_ENABLE | RECEIVE_INTERRUPT_ENABLE;
 }
 
 void spi_test_method1() {
