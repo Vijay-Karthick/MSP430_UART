@@ -210,7 +210,10 @@ void spi_init() {
 	UCA0MCTL   =   0;								//  No  modulation
 	UCA0CTL1 &= ~SOFTWARE_RESET_ENABLE;
 
-	/* Configure the IE2 register */
+	/*
+	 * Configure the IE2 register
+	 * @Todo: Move the interrupts to interrups section
+	 */
 	IE2 = TRANSMIT_INTERRUPT_ENABLE | RECEIVE_INTERRUPT_ENABLE;
 }
 
