@@ -150,6 +150,18 @@
 #define TRANSMIT_INTERRUPT_PENDING			(UCA0TXIFG)
 #define RECEIVE_INTERRUPT_PENDING			(UCA0RXIFG)
 
+/* Defines for UART */
+/* Defines for control register 0 */
+#define UART_PARITY_ENABLE					(UCPEN)
+#define UART_EVEN_PARITY					(UCPAR)
+#define UART_MSB_FIRST						(UCMSB)
+#define UART_7BIT_DATA						(UC7BIT)
+#define UART_2_STOP_BITS					(UCSPB)
+#define UART_MODE_ENABLE					(0x00)
+#define UART_SYNC_MODE_ENABLE				(UCSYNC)
+/* Defines for control register 1 */
+#define UART_BRCLK_SRC_SMCLK				(UCSSEL1|UCSSEL0)
+
 /*
  *------------------------------------------------------------------------------
  * Private Data Types
@@ -202,5 +214,7 @@ void delay_ms(int ms);
 void spi_init();
 void spi_test_method1();
 void spi_test_method2();
+void uart_init();
+void uart_test();
 
 #endif /* STARTUP_H_ */

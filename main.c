@@ -105,16 +105,20 @@ void main(void) {
 	/* Initialize the SPI */
 	spi_init();
 
+	/* Initialize the UART */
+	uart_init();
+
 	/* Enable the WDOG */
 	enable_watchdog();
 
 	/* forever loop */
-	for (;;) {
+//	for (;;) {
 		/* Reset WDOG timer to prevent resetting the CPU */
 		reset_wdog();
 
 		/* Test transmit */
-		spi_test_method1();
+//		spi_test_method1();
 //		spi_test_method2();
-	}
+		uart_test();
+//	}
 }

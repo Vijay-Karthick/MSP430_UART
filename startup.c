@@ -205,9 +205,15 @@ void spi_init() {
 
 	/* Configure the UCA0CTL1 register */
 	UCA0CTL1 = SPI_CLOCK_SRC_SMCLK;
-	UCA0BR0 |= 0x02;								//  /2
-	UCA0BR1 = 0;									//
+
+	/* Bit rate prescaler, divides the SPI clock */
+	UCA0BR0 |= 0x02;								//Source of the SPI CLK is divided by 2
+	UCA0BR1 = 0;									//MSB
+
+	/* No modulation allowed in SPI mode */
 	UCA0MCTL   =   0;								//  No  modulation
+
+	/* Release the software reset state */
 	UCA0CTL1 &= ~SOFTWARE_RESET_ENABLE;
 
 	/*
@@ -251,4 +257,62 @@ void spi_test_method2() {
 
 	/* Disable the slave, assuming slave is active low */
 	PORT1_OUTPUT_LOW(PORT1_PIN5_SPI_CS);
+}
+
+void uart_init() {
+	/* Hold the USCI in a software reset state */
+	UCA0CTL1 = SOFTWARE_RESET_ENABLE;
+
+	/* Configure the UCA0CTL0 register */
+	UCA0CTL0 = UART_MODE_ENABLE;
+	/* Enable 8 bit format */
+	UCA0CTL0 &= ~UART_7BIT_DATA;
+	/* Disable parity */
+	UCA0CTL0 &= ~UART_PARITY_ENABLE;
+	/* Enable 2 stop bits */
+	UCA0CTL0 |= UART_2_STOP_BITS;
+	/* Enable LSB first */
+	UCA0CTL0 &= ~UART_MSB_FIRST;
+	/* Disable SYNC mode for ASYNC transmissions in UART */
+	UCA0CTL0 &= ~UART_SYNC_MODE_ENABLE;
+
+	/* Configure the UCA0CTL1 register */
+	UCA0CTL1 |= UART_BRCLK_SRC_SMCLK;
+
+	/*
+	 * We want 9600 baud
+	 * 8000000/9600 = 833.33
+	 * 833 in decimal is 0x341 in hexadecimal, which is implemented by UCBR register
+	 * Remaining 0.33 is multiplied by 8 and the integer portion is implemented by UCBRS register
+	 * UCBRS = INT(833.33 - INT(833.33))*8 = INT(2.6667) = 2
+	 */
+	/* Baud generator prescaler, divides the UART CLK to produce SMCLK */
+	UCA0BR0 = 0x41;								//LSB of 0x341
+	UCA0BR1 = 0x03;								//MSB of 0x341
+	/* Modulation for reminder of the scaler */
+	/* Disable oversampling */
+	UCA0MCTL &= ~UCOS16;
+	/* UCBRF0 value is 0 and UCBRF1 value is 2 */
+	UCA0MCTL |= UCBRS0;
+
+	/* Release the software reset state */
+	UCA0CTL1 &= ~SOFTWARE_RESET_ENABLE;
+
+	/*
+	 * Configure the IE2 register
+	 * @Todo: Move the interrupts to interrups section
+	 */
+	IE2 = TRANSMIT_INTERRUPT_ENABLE | RECEIVE_INTERRUPT_ENABLE;
+}
+
+void uart_test() {
+	/* Check if any transfer is in progress */
+	while  (!(IFG2 &   UCA0TXIFG));
+	/* Transmit test byte */
+	TRANSMIT_BUFFER  =   0xAB;
+
+	/* Check if any receive is in progress */
+	while  (!(IFG2 &   UCA0RXIFG));
+	/* Copy received data to dummy character variable */
+	received_ch    =   RECEIVE_BUFFER;
 }
